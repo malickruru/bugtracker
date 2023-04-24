@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BugTracker</title>
+    <link rel="stylesheet" href="style/style.css">
+    <link rel="stylesheet" href="style/form.css">
+</head>
+
+<body>
+    <div class="container ">
+        <div class="row my-5 py-5 flexColumnCenter">
+            <div class="message">
+
+            </div>
+            <div class="col-md-5">
+                <form id="form" action="">
+                    <img src="img/logo_light.svg" alt="logo">
+                    <h1>Connexion</h1>
+                    <label for="">Nom d'utilisateur</label>
+                    <input id="username" type="text">
+                    <label for="">Mot de passe</label>
+                    <input id="password" type="password">
+                    <input type="submit" value="Connexion" class="btn btn-primary ">
+
+                    <p>Vous n'avez pas de compte ? <a href="inscription.html">s'inscrire</a> </p>
+                </form>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- jquery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"
+        integrity="sha512-pumBsjNRGGqkPzKHndZMaAG+bir374sORyzM3uulLV14lN5LyykqNk8eEeUlUkB3U0M4FApyaHraT65ihJhDpQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- gestion des cookies -->
+    <script src="script/cookie.js"></script>
+    <!-- affichage des messages -->
+    <script src="script/message.js"></script>
+    <!-- function d'inscription -->
+    <script>
+        $('#form').submit(function (e) {
+            e.preventDefault();
+            // inscription
+            var username = $("#username").val();
+            var password = $("#password").val();
+            console.log(username);
+            $.get("http://greenvelvet.alwaysdata.net/bugTracker/api/login/" + username + "/" + password,
+                function (data) {
+                    var obj = jQuery.parseJSON(data);
+                    if (obj.result.status != 'done') {
+                        message('error ', obj.result.message)
+                    } else {
+                        setCookie('BugTrackerUser', JSON.stringify(obj.result));
+                        window.location.href = '/tableau_de_bord.html'
+                    }
+                }
+            );
+        });
+    </script>
+</body>
+
+</html>

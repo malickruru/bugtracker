@@ -1,0 +1,26 @@
+.btn{
+    display: inline-block;
+    background-color: var(--light);
+    color: var(--primary);
+    border-radius: 20px;
+    padding: 10px 15px ;
+    margin: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    width: 150px;
+    text-align: center;
+}
+
+.btn:hover{
+    opacity: 0.7;
+}
+
+.btn-primary{
+    background-color: var(--primary);
+    color: #fff;
+}
+
+.btn-danger{
+    background-color: var(--red);
+    color: #fff;
+}

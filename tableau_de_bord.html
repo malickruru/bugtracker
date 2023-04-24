@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BugTracker</title>
+    <link rel="stylesheet" href="style/style.css">
+    <link rel="stylesheet" href="style/tableau_de_bord.css">
+    <!-- magnific popup -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css"
+        integrity="sha512-+EoPw+Fiwh6eSeRK7zwIKG2MA8i3rV/DGa3tdttQGgWyatG/SkncT53KHQaS5Jh9MNOT3dmFL0FjTY08And/Cw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+    <nav>
+        <div class="flexSpaceAround">
+            <div class="logo  flexLeft">
+                <img src="img/logo_light.svg" alt="logo">
+                <div>
+                    <span>Bug</span>
+                    <br>
+                    <span>Tracker</span>
+                </div>
+            </div>
+            <div class="flexSpaceAround mx-3 linkWrapper">
+                <a id="all" class="link active mx-3">Liste complète</a>
+                <a id="me" class="link mx-3">A traiter</a>
+                <a class="btn btn-danger mobile-only logout"> déconnexion</a>
+            </div>
+        </div>
+
+        <div class="desktop-only">
+            <a class="btn btn-danger logout"> déconnexion</a>
+        </div>
+
+        <div class="mobile-only">
+            <i class="bi bi-list link" id="list"></i>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row">
+            <div class="col tableau" style="display: none;">
+                <div class="stats flexSpaceAround my-3 p-4">
+                    <h1>Etat des Bugs</h1><br>
+                    <div class="flexColumnCenter">
+                        <span class="libelle">
+                            Total
+                        </span>
+                        <span class="number" id="total">
+                            8
+                        </span>
+                    </div>
+                    <div class="separator"></div>
+                    <div class="flexColumnCenter">
+                        <span class="libelle">
+                            En cours
+                        </span>
+                        <span class="number" id="enCours">
+                            4
+                        </span>
+                    </div>
+                    <div class="separator"></div>
+                    <div class="flexColumnCenter">
+                        <span class="libelle">
+                            Traités
+                        </span>
+                        <span class="number" id="Atraiter">
+                            1
+                        </span>
+                    </div>
+                </div>
+                <div class="message">
+
+                </div>
+                <div class="my-3">
+                    <a href="ajout_bug.html" class="btn btn-primary"><i class="bi bi-plus"></i> Ajouter un bug</a>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Désignation</th>
+                            <th class="desktop-only">Date</th>
+                            <th class="desktop-only">Nom</th>
+                            <th>Etat</th>
+                            <th class="white"></th>
+                        </tr>
+                    </thead>
+                    <tbody class="tbody">
+
+                    </tbody>
+                </table>
+            </div>
+            <div class="col loader flexColumnCenter" style="display: none;">
+                <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+                <lottie-player src="https://assets5.lottiefiles.com/packages/lf20_6nr1wcle.json"
+                    background="transparent" speed="1" style="width: 300px; height: 300px;" loop
+                    autoplay></lottie-player>
+                <h1 class="lead">Patience sa charge ...</h1>
+            </div>
+            <div class="col tableauVide flexColumnCenter pt-5 mt-5">
+                <img width="200px" src="img/logo_dark.svg">
+                <h1 class="lead">C'est vide ici</h1>
+                <a href="ajout_bug.html" class="btn btn-primary"><i class="bi bi-plus"></i> Ajouter un bug</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- popup -->
+    <div id="delete-popup" class="white-popup mfp-with-anim mfp-hide">
+        <h1>Attention</h1>
+        <p id="delete-paragraph"></p>
+        <a class="btn btn-primary" onclick="$.magnificPopup.close();">
+            Non
+        </a>
+        <a id="delete-button" class="btn btn-danger">
+            Oui, suprime
+        </a>
+
+
+    </div>
+
+
+    <!-- jquery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"
+        integrity="sha512-pumBsjNRGGqkPzKHndZMaAG+bir374sORyzM3uulLV14lN5LyykqNk8eEeUlUkB3U0M4FApyaHraT65ihJhDpQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- magnific popup -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"
+        integrity="sha512-IsNh5E3eYy3tr/JiX2Yx4vsCujtkhwl7SLqgnwLNgf04Hrt9BT9SXlLlZlWx+OK4ndzAoALhsMNcCmkggjZB1w=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- les cookie -->
+    <script src="script/cookie.js"></script>
+    <!-- les messages -->
+    <script src="script/message.js"></script>
+    <!-- affichage du tableau -->
+    <script src="script/tableau.js"></script>
+    <script>
+        $(document).ready(function () {
+            // au chargement , afficher la liste de tous les bug
+            getBugs(0);
+
+            // verifier si il y a un message à afficher
+            const searchParams = new URLSearchParams(window.location.search);
+            if (searchParams.has("msg")) {
+                message(searchParams.get("msg"))
+            } 
+
+            // n'afficher que les bugs de l'utilisateur en cliquant sur à traiter
+            $('#me').click(function (e) {
+                e.preventDefault();
+                getBugs(getUserId());
+            });
+
+            // afficher tous les bugs en cliquant sur liste complete
+            $('#all').click(function (e) {
+                e.preventDefault();
+                getBugs(0);
+            });
+
+            // menu hamburger
+            $("#list").click(function (e) {
+                $(".linkWrapper").toggle();
+            });
+
+
+            // déconnexion
+            $(".logout").click(function (e) {
+
+                if (getCookie("BugTrackerUser")) {
+                    var token = getCookie("BugTrackerUser").token
+                    $.get("http://greenvelvet.alwaysdata.net/bugTracker/api/logout/" + token,
+                        function (data) {
+                            var obj = jQuery.parseJSON(data);
+                            console.log(obj);
+                            deleteCookie("BugTrackerUser")
+                            window.location.href = '/connexion.html'
+                        }
+                    );
+                } else {
+                    window.location.href = '/connexion.html'
+                }
+            });
+
+
+
+        });
+
+
+    </script>
+</body>
+
+</html>

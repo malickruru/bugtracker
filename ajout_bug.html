@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BugTracker</title>
+    <link rel="stylesheet" href="style/style.css">
+    <link rel="stylesheet" href="style/form.css">
+    <!-- select2.js -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div class="container ">
+        <div class="row my-5 py-5 flexColumnCenter">
+            <div class="col-md-5">
+                <div class="loader flexColumnCenter screen">
+                    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+                    <lottie-player src="https://assets5.lottiefiles.com/packages/lf20_6nr1wcle.json"
+                        background="transparent" speed="1" style="width: 300px; height: 300px;" loop
+                        autoplay></lottie-player>
+                    <h1 class="lead">Patience sa charge ...</h1>
+                </div>
+                <form id="form" class="screen" style="display: none;" action="">
+                    <img src="img/logo_light.svg" alt="logo">
+                    <h1>Ajouter un bug</h1>
+                    <label for="">Titre du bug</label>
+                    <input name="title" id="title" type="text">
+                    <label for="">Description du bug</label>
+                    <textarea name="description" id="description" rows="6"></textarea>
+                    <label for="">Selectionner un dévelopeur</label>
+                    <select name="developpeurAssigne" id="developeurAssigne"></select>
+                    <input type="submit" value="Ajouter" class="btn btn-primary ">
+
+                </form>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- jquery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"
+        integrity="sha512-pumBsjNRGGqkPzKHndZMaAG+bir374sORyzM3uulLV14lN5LyykqNk8eEeUlUkB3U0M4FApyaHraT65ihJhDpQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- gestion des cookies -->
+    <script src="script/cookie.js"></script>
+    <!-- gestion du tableau -->
+    <script src="script/tableau.js"></script>
+    <!-- select 2 -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <!-- jquery validation -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
+
+    <script>
+
+        $(document).ready(function () {
+            isTokenValid();
+            $.get(`http://greenvelvet.alwaysdata.net/bugTracker/api/users/${token}`)
+                .done(function (data) {
+                    const obj = JSON.parse(data);
+                    obj.result.user.map((user, idx) => {
+                        $("<option>", { value: idx, text: user }).appendTo("#developeurAssigne");
+                    });
+                    // masquer le loader et afficher le formulaire
+                    $("#developeurAssigne").select2()
+                    // $(".select2-search__field").attr("placeholder", '<i class="bi bi-search"></i> recherche un dev');
+                    $('.screen').toggle();
+                })
+                .fail(function () {
+                    console.error('Erreur lors de la récupération des utilisateurs');
+                });
+
+            // Ajout d'une règle de validation pour le select
+            $.validator.addMethod('selectDev', function (value, element) {
+                return value > 0;
+            }, 'Sélectionnez un développeur svp.');
+
+            $("#form").submit(function (e) {
+                e.preventDefault();
+                // verifier si les champ sont valides
+                $("#form").validate({
+                    rules: {
+                        developpeurAssigne: {
+                            selectDev: true
+                        },
+                        title: "required",
+                        description: "required"
+                    },
+                    messages: {
+                        title: "Entrez un titre svp",
+                        description: "Entrez un titre svp",
+                    }
+                });
+
+                if ($("#form").valid()) {
+                    const formData = new FormData(this);
+                    const values = {};
+                    for (const [key, value] of formData.entries()) {
+                        values[key] = value;
+                    }
+                    isTokenValid();
+                    $.post('http://greenvelvet.alwaysdata.net/bugTracker/api/add/' + token + '/' + values.developpeurAssigne,
+
+                        JSON.stringify({
+                            "title": values.title,
+                            "description": values.description
+                        })
+
+                    ).done(function (data) {
+                        window.location.href = '/tableau_de_bord.html?msg=add'
+                    })
+                        .fail(function (err) {
+                            console.error(err);
+                        })
+                }
+
+            });
+
+            // placeholder select2
+            $('#developeurAssigne').one('select2:open', function (e) {
+                $('input.select2-search__field').prop('placeholder', '🔍 Entrer le nom du dev');
+            });
+        });
+
+
+
+
+
+
+    </script>
+</body>
+
+</html>

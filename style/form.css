@@ -1,0 +1,97 @@
+form{
+    background-color: var(--dark);
+    border-radius: 20px;
+    padding: 15px;
+}
+
+form *{
+    display: block;
+    
+}
+
+img{
+    width: 75px;
+    margin: 5px auto;
+}
+
+h1,label{
+    font-family: var(--fontTitle);
+    color:#fff;
+}
+
+h1{
+    text-align: center;
+}
+
+label{
+    font-size: 17px;
+    margin-left: 15px ;
+}
+
+input, textarea,.select2{
+    border-radius: 20px;
+    outline: none;
+    padding: 10px;
+    border: none;
+    margin: 15px;
+    background-color: var(--light);
+    width: 90%;
+}
+
+.select2-container--default .select2-selection--single {
+    background-color: var(--light) !important;
+    border: none !important;
+    
+}
+
+.select2-search--dropdown .select2-search__field {
+    padding: 7px !important;
+    width: 90% !important;
+    /* width: 100%; */
+    /* box-sizing: border-box; */
+    background-color: #fff !important;
+}
+
+
+  
+
+
+.select2{
+    padding: 0px;
+     width: 90% !important;
+     margin: 15px !important;
+}
+/* 
+#developeurAssigne{
+
+} */
+
+
+input[type="submit"]{
+    display: block;
+    margin: 30px auto !important;
+}
+
+p{
+    text-align: center;
+    color: #fff;
+
+    /* margin: auto; */
+}
+
+a{
+    display: inline;
+    color: var(--primary);
+    text-decoration: none;
+}
+
+a:hover{
+    opacity:  0.7;
+}
+
+.error{
+    color: var(--red);
+    font-style: italic;
+    
+    margin-bottom: 30px ;
+}
